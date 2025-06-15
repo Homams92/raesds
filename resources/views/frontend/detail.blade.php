@@ -7,10 +7,10 @@
     <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
       <div class="col-md-9 ftco-animate pb-5">
         <p class="breadcrumbs">
-          <span class="mr-2"><a href="{{ route('homepage')}}">Home <i class="ion-ios-arrow-forward"></i></a></span>
+          <span class="mr-2"><a href="{{ route('car')}}">Katalog Mobil <i class="ion-ios-arrow-forward"></i></a></span>
           <span>Detail Mobil<i class="ion-ios-arrow-forward"></i></span>
         </p>
-        <h1 class="mb-3 bread">Detail Mobil</h1>
+        <h1 class="mb-3 bread">Informasi Lengkap Mobil</h1>
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@
         </div>
       <!-- Detail Mobil -->
       <div class="d-flex justify-content-center">
-        <div class="p-4 rounded-4 shadow text-white" style="max-width: 450px; width: 100%; background-color:rgb(54, 107, 76);">
+        <div class="p-4 rounded-4 shadow text-white" style="max-width: 450px; width: 100%; background: linear-gradient(135deg, #2c3e50, #34495e);">
           <h2 class="mb-3 text-uppercase fw-bold text-white">{{ $car->title }}</h2>
 
           <!-- Harga -->
@@ -99,7 +99,7 @@
           <div class="tab-content" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-manufacturer" role="tabpanel" aria-labelledby="pills-manufacturer-tab">
               <div class="text-end">
-                <p class="fw-bold fs-4">{!! $car->description !!}</p>
+                <p class="fw-bold fs-4 text-dark"><strong>{!! $car->description !!}</strong></p>
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@
               <!-- Tiga Langkah -->
               <div class="row d-flex mb-4">
                 @foreach ([
-                  ['icon' => 'route', 'title' => 'Tentukan Lokasi Jemput'],
+                  ['icon' => 'route', 'title' => 'Tentukan mobil yang ingin Anda pesan'],
                   ['icon' => 'handshake', 'title' => 'Dapatkan Harga Terbaik'],
                   ['icon' => 'rent', 'title' => 'Booking Mobilmu Sekarang!']
                 ] as $step)
@@ -135,67 +135,69 @@
                 @endforeach
               </div>
               <!-- Form Booking -->
-              <div class="services-wrap bg-light text-dark py-5 px-4 rounded-4 shadow-lg border border-2 border-secondary-subtle">
-                <h3 class="text-center mb-4 font-weight-bold text-dark">Booking Layanan</h3>
-                    <form action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="car_title" value="{{ $car->title }}">
-                    <input type="hidden" id="price_per_day" value="{{ $car->price }}">
-                    
+              <div class="services-wrap py-5 px-4 rounded-4 shadow-lg" style="background: linear-gradient(135deg, #2c3e50, #34495e); border-left: 8px;">
+                <h3 class="text-center mb-4 fw-bold text-white">Booking Layanan</h3>
+                
+                <form action="{{ route('booking.store') }}" method="POST" enctype="multipart/form-data">
+                  @csrf
+                  <input type="hidden" name="car_title" value="{{ $car->title }}">
+                  <input type="hidden" id="price_per_day" value="{{ $car->price }}">
+
+                  <div class="mb-3">
+                    <label for="customer_name" class="form-label fw-semibold text-white">Nama:</label>
+                    <input type="text" name="customer_name" class="form-control rounded-pill border-dark" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="customer_phone" class="form-label fw-semibold text-white">No. Telepon / WhatsApp:</label>
+                    <input type="text" name="customer_phone" class="form-control rounded-pill border-dark" required>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label for="rental_start_date" class="form-label fw-semibold text-white">Tanggal Pemesanan:</label>
+                      <input type="date" name="rental_start_date" class="form-control rounded-pill border-dark" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label for="rental_end_date" class="form-label fw-semibold text-white">Tanggal Selesai:</label>
+                      <input type="date" name="rental_end_date" class="form-control rounded-pill border-dark" required>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="total_price" class="form-label fw-semibold text-white">Total Harga:</label>
+                    <input type="text" name="total_price_display" id="total_price_display" class="form-control rounded-pill border-dark bg-white" readonly>
+                    <input type="hidden" name="total_price" id="total_price">
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="payment_method" class="form-label fw-semibold text-white">Metode Pembayaran:</label>
+                    <select name="payment_method" id="payment_method" class="form-select rounded-pill border-dark" required onchange="togglePaymentProof()">
+                      <option value="">-- Pilih Metode --</option>
+                      <option value="qris">Bayar Sekarang (QRIS)</option>
+                      <option value="cod">Bayar di Tempat</option>
+                    </select>
+                  </div>
+
+                  <div id="payment_info" style="display: none;" class="mb-3">
                     <div class="mb-3">
-                        <label for="customer_name" class="form-label fw-semibold">Nama:</label>
-                        <input type="text" name="customer_name" class="form-control rounded-pill" required>
+                      <p class="text-white"><strong>QRIS atau No. Rekening:</strong></p>
+                      <p class="text-white">No. Rekening: <span class="fw-semibold">1234567890 (Bank ABC)</span></p>
+                      <img src="{{ asset('frontend/images/qris_example.jpg') }}" alt="QRIS" style="width: 200px;" class="rounded shadow">
                     </div>
-
-                   <div class="mb-3">
-                        <label for="customer_phone" class="form-label fw-semibold">No. Telepon / WhatsApp:</label>
-                        <input type="text" name="customer_phone" class="form-control rounded-pill" required>
+                    <div class="mb-3" id="payment_proof_group">
+                      <label for="payment_proof" class="form-label fw-semibold text-white">Upload Bukti Pembayaran:</label>
+                      <input type="file" name="payment_proof" class="form-control rounded-pill border-dark bg-white" accept="image/*">
                     </div>
+                  </div>
 
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                        <label for="rental_start_date" class="form-label fw-semibold">Tanggal Pemesanan:</label>
-                        <input type="date" name="rental_start_date" class="form-control rounded-pill" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                        <label for="rental_end_date" class="form-label fw-semibold">Tanggal Selesai:</label>
-                        <input type="date" name="rental_end_date" class="form-control rounded-pill" required>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="total_price" class="form-label fw-semibold">Total Harga:</label>
-                        <input type="text" name="total_price_display" id="total_price_display" class="form-control rounded-pill" readonly>
-                        <input type="hidden" name="total_price" id="total_price">
-                    </div>
-
-
-                    <div class="mb-3">
-                        <label for="payment_method" class="form-label fw-semibold">Metode Pembayaran:</label>
-                        <select name="payment_method" id="payment_method" class="form-select rounded-pill" required onchange="togglePaymentProof()">
-                        <option value="">-- Pilih Metode --</option>
-                        <option value="qris">Bayar Sekarang (QRIS)</option>
-                        <option value="cod">Bayar di Tempat</option>
-                        </select>
-                    </div>
-
-                    <div id="payment_info" style="display: none;" class="mb-3">
-                        <div class="mb-3">
-                        <p><strong>QRIS atau No. Rekening:</strong></p>
-                        <p>No. Rekening: 1234567890 (Bank ABC)</p>
-                        <img src="{{ asset('frontend/images/qris_example.jpg') }}" alt="QRIS" style="width: 200px;">
-                        </div>
-                        <div class="mb-3" id="payment_proof_group">
-                        <label for="payment_proof" class="form-label fw-semibold">Upload Bukti Pembayaran:</label>
-                        <input type="file" name="payment_proof" class="form-control rounded-3" accept="image/*">
-                        </div>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-gradient text-white btn-lg px-5 py-2 rounded-pill">Pesan Sekarang</button>
-                    </div>
-                    </form>
+                  <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow">
+                      Pesan Sekarang
+                    </button>
+                  </div>
+                </form>
+              </div>
 
                     <script>
                     const startDateInput = document.querySelector('input[name="rental_start_date"]');
@@ -279,14 +281,11 @@
         <div class="car-wrap rounded ftco-animate">
           <div class="img rounded d-flex align-items-end" style="background-image: url('{{ Storage::url($related_car->thumbnail) }}');"></div>
           <div class="text">
-            <h2 class="mb-0"><a href="{{ route('car.show', $related_car->slug) }}">{{ $related_car->title}}</a></h2>
-            <div class="d-flex mb-3">
-              <p class="price ml-auto">{{ $related_car->price }} <span>/day</span></p>
-            </div>
-            <p class="d-flex mb-0 d-block">
-              <a href="{{ route ('car.show', $related_car->slug) }}" class="btn btn-primary py-2 mr-1">Book now</a>
-              <a href="{{ route ('car.show', $related_car->slug) }}" class="btn btn-secondary py-2 ml-1">Details</a>
-            </p>
+          <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">
+              <a href="{{ route('car.show', $related_car->slug) }}">{{ $related_car->title }}</a>
+            </h2>
+            <a href="{{ route('car.show', $related_car->slug) }}" class="btn btn-secondary py-2 px-3">Details</a>
           </div>
         </div>
       </div>
